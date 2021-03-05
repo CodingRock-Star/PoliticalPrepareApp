@@ -8,6 +8,7 @@ import java.util.*
 data class Election(
         @PrimaryKey val id: Int,
         @ColumnInfo(name = "name")val name: String,
+        @ColumnInfo(name = "isSaved") var isSaved: Boolean = false,
         @ColumnInfo(name = "electionDay")val electionDay: Date,
         @Embedded(prefix = "division_") @Json(name="ocdDivisionId") val division: Division
 )
