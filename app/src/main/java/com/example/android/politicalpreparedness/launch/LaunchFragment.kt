@@ -16,8 +16,8 @@ class LaunchFragment : Fragment() {
         val binding = FragmentLaunchBinding.inflate(inflater)
         binding.lifecycleOwner = this
 
-        binding.representativeButton.setOnClickListener { navToRepresentatives() }
-        binding.upcomingButton.setOnClickListener { navToElections() }
+        binding.representativesButton.setOnClickListener { navToRepresentatives() }
+        binding.upcomingElectionsButton.setOnClickListener { navToElections() }
 
         return binding.root
     }
