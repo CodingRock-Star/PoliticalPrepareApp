@@ -1,21 +1,55 @@
 package com.example.android.politicalpreparedness.election
 
 import android.app.Application
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import com.example.android.politicalpreparedness.database.ElectionDatabase.Companion.getInstance
+import com.example.android.politicalpreparedness.network.models.Election
+import kotlinx.coroutines.launch
 
-class VoterInfoViewModel(private val application: Application) : ViewModel() {
+class VoterInfoViewModel(application: Application) : AndroidViewModel(application) {
 
-    //TODO: Add live data to hold voter info
+    private val database = getInstance(application)
+    private val electionsRepository = ElectionsRepository(database)
 
-    //TODO: Add var and methods to populate voter info
+    val voterInfo = electionsRepository.voterInfo
 
-    //TODO: Add var and methods to support loading URLs
+    var Url = MutableLiveData<String>()
 
-    //TODO: Add var and methods to save and remove elections to local database
-    //TODO: cont'd -- Populate initial state of save button to reflect proper action based on election saved status
+    private val electionId = MutableLiveData<Int>()
 
-    /**
-     * Hint: The saved state can be accomplished in multiple ways. It is directly related to how elections are saved/removed from the database.
-     */
+    val election=getElectionWithId()
+
+    fun getElectionWithId():LiveData<Election>{
+        viewModelScope.launch {
+            electionId.value?.toInt()?.let { electionsRepository.getElection(it) }
+        }
+     return electionsRepository.electionWithId
+    }
+
+
+    fun getElection(id: Int) {
+        electionId.value = id
+    }
+
+
+    fun SaveElection(election: Election) {
+        election.isSaved = !election.isSaved
+        viewModelScope.launch {
+            electionsRepository.insertElectionToDataBase(election)
+        }
+    }
+
+    fun getVoterInfo(electionId: Int, address: String) =
+            viewModelScope.launch {
+                electionsRepository.getVoterInfo(electionId, address)
+            }
+
+
+    fun intentUrl(url: String) {
+        Url.value = url
+    }
 
 }
